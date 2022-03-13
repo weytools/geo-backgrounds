@@ -1,4 +1,13 @@
 <script>
+    import { onMount } from "svelte";
+
+    export let x;
+    export let y;
+    
+    onMount(()=>{
+        initRotate();
+        initColor();
+    })
     let x = 0;
     let y = 10;
     function moveX(){
@@ -15,7 +24,7 @@
     transform: rotate(${rotation}deg);   
     `
 </script>
-<rect on:click={rotate} class="geo-c1" {x} {y} style={styles}/>
+<rect on:click={rotate} on:mouseover on:mouseout class="geo-c1" {x} {y} style={styles} />
 
 <style>
 

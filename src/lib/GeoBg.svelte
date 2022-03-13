@@ -23,7 +23,18 @@
 		var cols = Math.floor(w / gap);
 	}
 
+	// for (let i = 0; i < cols; i++) {
+	// 	let sq = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+	// 	sq.classList.add("geo-c" + Math.floor(Math.random() * 8 + 1));
+	// 	let xcoord = Math.floor(Math.random() * gap + i * gap).toString();
+	// 	sq.setAttribute("x", xcoord);
+	// 	sq.setAttribute("y", "10");
+	// 	let rotation = Math.floor(Math.random() * 89);
+	// 	sq.setAttribute("style", `transform: rotate(${rotation}deg);`);
+	// 	this.appendChild(sq);
+	// }
 	for (let i = 0; i < cols; i++) {
+		this.appendChild({<Square/>});
 		let sq = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 		sq.classList.add("geo-c" + Math.floor(Math.random() * 8 + 1));
 		let xcoord = Math.floor(Math.random() * gap + i * gap).toString();
@@ -101,12 +112,16 @@
 		}
 	}
 	}
+
+	function geoHover(){
+		console.log(this)
+	}
 </script>
 
 <svg
-	on:click={fillup}
+	on:click={randoms}
 	class="geo"
-	viewBox="0 0 200 200"
+	viewBox="0 0 100 100"
 	version="1.1"
 	xmlns="http://www.w3.org/2000/svg"
 	style={dynamicStyles}
@@ -124,9 +139,9 @@
 		<rect class="grid base" fill="url(#grid)" /> -->
 
 	<!--  square  -->
-	<Square />
+	<Square on:mouseover="{()=>console.log(this)}" use:geoHover />
 	<!--  circle  -->
-	<circle class="geo-c8" cx="5" cy="30" r="5" />
+	<circle class="geo-c8" cx="5" cy="40" r="5" />
 	<!--  triangle  -->
 	<polygon class="geo-c4" points="0,50 5,40.86 10,50" />
 	<!--  squig  -->
@@ -146,7 +161,7 @@
 <style lang="scss">
 	:root {
 	--geo-clight: #b9d5ee;
-	--geo-cdark: #1c333c;
+	--geo-cdark: #121212;
 	--geo-c1: #00c7b0;
 	--geo-c2: #ffce52;
 	--geo-c3: #ffa257;
@@ -202,7 +217,7 @@
 	polygon,
 	polyline,
 	path {
-		fill: transparent;
+		fill: fuschia;
 		stroke-width: var(--stroke-size);
 		height: 10px;
 		width: 10px;
