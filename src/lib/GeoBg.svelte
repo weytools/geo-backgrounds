@@ -1,11 +1,64 @@
 <script lang="ts">
 	import { svg_element } from "svelte/internal";
+	import { onMount } from "svelte";
 	import Square from "./geo/Square.svelte";
 	import { geoHover } from "./geo/geos.js";
+	import Shape from "./geo/Shape.svelte";
+	import type { BgElement } from "src/types/bgelement.type";
 
-	let strokeSize = 0.05;
+	let strokeSize = 0.25;
 
-	$: dynamicStyles = `--stroke-size: ${strokeSize}rem`;
+	$: dynamicStyles = `--stroke-size: ${strokeSize}rem`
+	$: bgElements = []
+
+	// constructor
+	let gap = 50
+	let blockSize = 100
+	onMount(()=>{
+		// build background grid
+		let bg = document.getElementById('svg-background')
+
+		let w = bg.clientWidth
+		let h = bg.clientHeight
+
+		let cols = w / (blockSize + gap)
+		let rows = h / (blockSize + gap)
+
+		console.log(w,h,cols,rows)
+
+		// add elements to grid
+		// coordinate helper
+		for (let i = 1; i < cols; i++) {
+			// preceding gaps
+			let gapSpace = gap * i
+			// preceding cols
+			let blockSpace = blockSize * i
+
+			// get range
+			let maxX = blockSpace + gapSpace
+			let minX = maxX - blockSize
+
+			// find random spot
+			let finalX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
+			//placeholder Y
+			let finalY = Math.floor(Math.random() * h);
+			
+			// create shape
+			let newElement: BgElement = {
+				component: Square,
+				xPos: finalX,
+				yPos: finalY,
+				rotation: Math.floor(Math.random() * 360)				
+			}
+			// place element
+			bgElements = [...bgElements, newElement]
+
+		}
+		// first one should be at 
+
+	})
+
+
 
 	function bigger() {
 		strokeSize += 0.01;
@@ -36,94 +89,90 @@
 		// }
 		}
 
-	function getRandomGeo(){
-		// set nums
-		var sum = 0
-		var seed = Math.floor((Math.random() * 100))/100
-		var len = geos.length
+	// function getRandomGeo(){
+	// 	// set nums
+	// 	var sum = 0
+	// 	var seed = Math.floor((Math.random() * 100))/100
+	// 	var len = geos.length
 
-		// loop thru geos and choose one
-		for (var i = 0; i < len; i++) {
-			let geo = geos[i]
-			// skip if it's in cooldown
-			if (geo.cooldown > 0) {
-				geos[i].cooldown--;
-				continue;
-			}
-			// chance % to choose this geo
-			let chance = geo.freq/len;
-			sum += chance;
+	// 	// loop thru geos and choose one
+	// 	for (var i = 0; i < len; i++) {
+	// 		let geo = geos[i]
+	// 		// skip if it's in cooldown
+	// 		if (geo.cooldown > 0) {
+	// 			geos[i].cooldown--;
+	// 			continue;
+	// 		}
+	// 		// chance % to choose this geo
+	// 		let chance = geo.freq/len;
+	// 		sum += chance;
 
-			if (seed <= sum) {
-				return geo
-			}
-		}
+	// 		if (seed <= sum) {
+	// 			return geo
+	// 		}
+	// 	}
+	// }
+
+	let geos = {
+		"square":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"circle":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"triangle":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"sharp-squig":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"soft-squig":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"dot":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"plus":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		"spacer":{
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
 	}
-
-	let geos = [
-	{
-		type: "square",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "circle",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "triangle",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "sharp-squig",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "soft-squig",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "dot",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "plus",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	{
-		type: "spacer",
-		freq: 1.0,
-		cooldown: 0,
-        component: Square
-	},
-	];
 </script>
 
 <svg
-	on:click={()=>console.log(getRandomGeo())}
+	on:click={()=>console.log('hi')}
+	id="svg-background"
 	class="geo"
-	viewBox="0 0 100 100"
+	viewBox="0 0 100% 100%"
 	version="1.1"
 	xmlns="http://www.w3.org/2000/svg"
 	style={dynamicStyles}
 	preserveAspectRatio="xMinYMin"
 >
+	{#each bgElements as bgElement}
+		<svelte:component this={Shape} element={bgElement}/>
+	{/each}
 
 	<!--  square  -->
-	<Square on:mouseover="{()=>console.log(this)}" x="10" y="10" />
+	<!-- <Square on:mouseover={()=>console.log(this)} x="10" y="10" /> -->
 	<!--  circle  -->
 	<circle class="geo-c8" cx="5" cy="40" r="5" />
 	<!--  triangle  -->
@@ -201,10 +250,10 @@
 	polygon,
 	polyline,
 	path {
-		fill: fuschia;
+		fill: transparent;
 		stroke-width: var(--stroke-size);
-		height: 10px;
-		width: 10px;
+		height: 100px;
+		width: 100px;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transform-origin: 50% 50%;

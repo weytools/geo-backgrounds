@@ -15,7 +15,7 @@
     transform: rotate(${rotation}deg);   
     `
 </script>
-<rect on:click={rotate} on:mouseover on:mouseout class="geo-c1" {x} {y} style={styles} />
+<rect on:click={rotate} class="geo-c1" {x} {y} style={styles} />
 
 <style>
 </style>

@@ -1,8 +1,17 @@
-<script>
+<script lang="ts">
     import Square from './Square.svelte';
+    import { onMount, onDestroy } from 'svelte';
+    import type { BgElement } from "src/types/bgelement.type";
 
-    export let geo;
+    export let element: BgElement;
 
+    onMount(()=>{
+
+    })
+
+    onDestroy(()=>{
+        // tell svgbg to make a new one in my place
+    })
 
     // Event Handlers
     let hovering;
@@ -16,7 +25,7 @@
     }
 </script>
 
-<svelte:component this={selected.component} on:mouseenter={enter} on:mouseleave={leave} /> 
+<svelte:component this={element.component} x={element.xPos} y={element.yPos} on:mouseenter={enter} on:mouseleave={leave} /> 
 
 <style>
 </style>
