@@ -1,49 +1,63 @@
 <script lang="ts">
 	import { svg_element } from "svelte/internal";
 	import Square from "./geo/Square.svelte";
+	import { geoHover } from "./geo/geos.js";
 
 	let strokeSize = 0.05;
 
 	$: dynamicStyles = `--stroke-size: ${strokeSize}rem`;
 
 	function bigger() {
-	strokeSize += 0.01;
+		strokeSize += 0.01;
 	}
 	function fillup() {
-	let gap = 50;
-	let w = this.getBoundingClientRect().width;
-	let h = this.getBoundingClientRect().height;
-	if (h < w) {
-		let hratio = h / 200;
-		let wvisible = w / hratio;
+		let gap = 50;
+		let w = this.getBoundingClientRect().width;
+		let h = this.getBoundingClientRect().height;
+		if (h < w) {
+			let hratio = h / 200;
+			let wvisible = w / hratio;
 
-		var cols = Math.floor(wvisible / gap);
-		var rows = Math.floor(h / 100);
-	} else {
-		var cols = Math.floor(w / gap);
-	}
+			var cols = Math.floor(wvisible / gap);
+			var rows = Math.floor(h / 100);
+		} else {
+			var cols = Math.floor(w / gap);
+		}
 
-	// for (let i = 0; i < cols; i++) {
-	// 	let sq = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-	// 	sq.classList.add("geo-c" + Math.floor(Math.random() * 8 + 1));
-	// 	let xcoord = Math.floor(Math.random() * gap + i * gap).toString();
-	// 	sq.setAttribute("x", xcoord);
-	// 	sq.setAttribute("y", "10");
-	// 	let rotation = Math.floor(Math.random() * 89);
-	// 	sq.setAttribute("style", `transform: rotate(${rotation}deg);`);
-	// 	this.appendChild(sq);
-	// }
-	for (let i = 0; i < cols; i++) {
-		this.appendChild({<Square/>});
-		let sq = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-		sq.classList.add("geo-c" + Math.floor(Math.random() * 8 + 1));
-		let xcoord = Math.floor(Math.random() * gap + i * gap).toString();
-		sq.setAttribute("x", xcoord);
-		sq.setAttribute("y", "10");
-		let rotation = Math.floor(Math.random() * 89);
-		sq.setAttribute("style", `transform: rotate(${rotation}deg);`);
-		this.appendChild(sq);
-	}
+		// for (let i = 0; i < cols; i++) {
+		// 	let sq = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+		// 	sq.classList.add("geo-c" + Math.floor(Math.random() * 8 + 1));
+		// 	let xcoord = Math.floor(Math.random() * gap + i * gap).toString();
+		// 	sq.setAttribute("x", xcoord);
+		// 	sq.setAttribute("y", "10");
+		// 	let rotation = Math.floor(Math.random() * 89);
+		// 	sq.setAttribute("style", `transform: rotate(${rotation}deg);`);
+		// 	this.appendChild(sq);
+		// }
+		}
+
+	function getRandomGeo(){
+		// set nums
+		var sum = 0
+		var seed = Math.floor((Math.random() * 100))/100
+		var len = geos.length
+
+		// loop thru geos and choose one
+		for (var i = 0; i < len; i++) {
+			let geo = geos[i]
+			// skip if it's in cooldown
+			if (geo.cooldown > 0) {
+				geos[i].cooldown--;
+				continue;
+			}
+			// chance % to choose this geo
+			let chance = geo.freq/len;
+			sum += chance;
+
+			if (seed <= sum) {
+				return geo
+			}
+		}
 	}
 
 	let geos = [
@@ -51,75 +65,55 @@
 		type: "square",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "circle",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "triangle",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "sharp-squig",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "soft-squig",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "dot",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "plus",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	{
 		type: "spacer",
 		freq: 1.0,
 		cooldown: 0,
+        component: Square
 	},
 	];
-
-	function randoms(){
-
-		var sum = 0
-		console.log('sum:', sum)
-		var r = Math.floor((Math.random() * 100))/100
-  		console.log('%c%s', 'color: #00a3cc', r);
-		console.log('r:', r)
-		var len = geos.length
-
-	for (var i = 0; i < len; i++) {
-		let geo = geos[i]
-		console.log('geo', geo)
-
-		// percentage of 1
-		let perc = geo.freq/len
-		sum += perc
-		console.log('perc:', perc, 'sum:', sum)
-		if (r <= sum){
-		console.log('Took '+(i+1)+' tries', 'Picked', geo)
-		break
-		}
-	}
-	}
-
-	function geoHover(){
-		console.log(this)
-	}
 </script>
 
 <svg
-	on:click={randoms}
+	on:click={()=>console.log(getRandomGeo())}
 	class="geo"
 	viewBox="0 0 100 100"
 	version="1.1"
@@ -127,19 +121,9 @@
 	style={dynamicStyles}
 	preserveAspectRatio="xMinYMin"
 >
-	<!-- <defs>
-		<pattern id="smallGrid" width="5" height="5" patternUnits="userSpaceOnUse">
-			<path d="M 5 0 L 0 0 0 5" fill="none" stroke="#FFFFFF05" stroke-width="0.5"/>
-		</pattern>
-		<pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-			<rect class="grid" width="10" height="10" fill="url(#smallGrid)"/>
-			<path d="M 10 0 L 0 0 0 10" fill="none" stroke="#FFFFFF10" stroke-width="1"/>
-		</pattern>
-		</defs>
-		<rect class="grid base" fill="url(#grid)" /> -->
 
 	<!--  square  -->
-	<Square on:mouseover="{()=>console.log(this)}" use:geoHover />
+	<Square on:mouseover="{()=>console.log(this)}" x="10" y="10" />
 	<!--  circle  -->
 	<circle class="geo-c8" cx="5" cy="40" r="5" />
 	<!--  triangle  -->
@@ -151,7 +135,7 @@
 	<!--  dot  -->
 	<circle class="geo-c3" cx="5" cy="80" r=".5" />
 	<!--  round squig  -->
-	<path on:click={randoms} class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" />
+	<path class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" />
 
 	<!-- 0,0 cross   -->
 	<rect class="grid" width="15" height="0.5" x="-7.5" y="0" fill="#ccc" />
