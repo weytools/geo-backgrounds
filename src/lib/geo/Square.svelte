@@ -7,8 +7,11 @@
 
     let rotation = 0
     let maxRotation = 89
+
+    onMount(()=>rotate());
+
     function rotate(){
-        rotation = Math.floor(Math.random() * 89)
+        rotation = Math.floor(Math.random() * maxRotation)
     }
 
     $: styles = `

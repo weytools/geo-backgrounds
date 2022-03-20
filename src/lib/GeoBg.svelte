@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { svg_element } from "svelte/internal";
-	import { onMount } from "svelte";
-	import Square from "./geo/Square.svelte";
 	import { geoHover } from "./geo/geos.js";
-	import Shape from "./geo/Shape.svelte";
+	import { onMount } from "svelte";
 	import type { BgElement } from "src/types/bgelement.type";
+	import Square from "./geo/Square.svelte";
+	import Shape from "./geo/Shape.svelte";
 
 	let strokeSize = 0.25;
 
@@ -12,8 +12,12 @@
 	$: bgElements = []
 
 	// constructor
-	let gap = 50
-	let blockSize = 100
+
+	let blockSize = 200
+	let shapeSize = 50
+	let cols;
+	$: rows = 0;
+
 	onMount(()=>{
 		// build background grid
 		let bg = document.getElementById('svg-background')
@@ -21,73 +25,48 @@
 		let w = bg.clientWidth
 		let h = bg.clientHeight
 
-		let cols = w / (blockSize + gap)
-		let rows = h / (blockSize + gap)
+		cols = Math.ceil(w / (blockSize)) + 1
+		rows = Math.ceil(h / (blockSize)) + 1
 
 		console.log(w,h,cols,rows)
 
 		// add elements to grid
 		// coordinate helper
-		for (let i = 1; i < cols; i++) {
-			// preceding gaps
-			let gapSpace = gap * i
-			// preceding cols
-			let blockSpace = blockSize * i
+		for (let r = 1; r < rows; r++) {
+			for (let c = 1; c < cols; c++) {
+				// find random X
+				let finalX = getAxisPoint(c)
+				let finalY = getAxisPoint(r)
+				
+				// create shape
+				let newElement: BgElement = {
+					component: Square,
+					xPos: finalX,
+					yPos: finalY,
+					rotation: Math.floor(Math.random() * 360)				
+				}
+				// place element
+				bgElements = [...bgElements, newElement]
 
-			// get range
-			let maxX = blockSpace + gapSpace
-			let minX = maxX - blockSize
-
-			// find random spot
-			let finalX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
-			//placeholder Y
-			let finalY = Math.floor(Math.random() * h);
-			
-			// create shape
-			let newElement: BgElement = {
-				component: Square,
-				xPos: finalX,
-				yPos: finalY,
-				rotation: Math.floor(Math.random() * 360)				
 			}
-			// place element
-			bgElements = [...bgElements, newElement]
-
 		}
-		// first one should be at 
 
 	})
 
+	function getAxisPoint(i:number){
 
+		// refactor
+		let min = blockSize * (i-1)
+		let max = blockSize * i
 
-	function bigger() {
-		strokeSize += 0.01;
+		// these are top left origin so 0,0 relative will stay in box
+		// add margin for max
+		max -= shapeSize
+
+		// find random spot
+		return Math.floor(Math.random() * (max - min + 1) + min);
 	}
-	function fillup() {
-		let gap = 50;
-		let w = this.getBoundingClientRect().width;
-		let h = this.getBoundingClientRect().height;
-		if (h < w) {
-			let hratio = h / 200;
-			let wvisible = w / hratio;
 
-			var cols = Math.floor(wvisible / gap);
-			var rows = Math.floor(h / 100);
-		} else {
-			var cols = Math.floor(w / gap);
-		}
-
-		// for (let i = 0; i < cols; i++) {
-		// 	let sq = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-		// 	sq.classList.add("geo-c" + Math.floor(Math.random() * 8 + 1));
-		// 	let xcoord = Math.floor(Math.random() * gap + i * gap).toString();
-		// 	sq.setAttribute("x", xcoord);
-		// 	sq.setAttribute("y", "10");
-		// 	let rotation = Math.floor(Math.random() * 89);
-		// 	sq.setAttribute("style", `transform: rotate(${rotation}deg);`);
-		// 	this.appendChild(sq);
-		// }
-		}
 
 	// function getRandomGeo(){
 	// 	// set nums
@@ -186,58 +165,45 @@
 	<!--  round squig  -->
 	<path class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" />
 
-	<!-- 0,0 cross   -->
-	<rect class="grid" width="15" height="0.5" x="-7.5" y="0" fill="#ccc" />
+	<!-- grid  -->
+	{#each Array(rows) as _, i}
+		<rect class="grid" width="100%" height="1" x="0" y="{i*blockSize}" fill="#cccccc80" />
+	{/each}
+	{#each Array(cols) as _, i}
+		<rect class="grid" width="1" height="100%" x="{i*blockSize}" y="0" fill="#cccccc80" />
+	{/each}
 	<rect class="grid" width="0.5" height="15" x="0" y="-7.5" fill="#ccc" />
 </svg>
 
 <style lang="scss">
-	:root {
-	--geo-clight: #b9d5ee;
-	--geo-cdark: #121212;
-	--geo-c1: #00c7b0;
-	--geo-c2: #ffce52;
-	--geo-c3: #ffa257;
-	--geo-c4: #ff6038;
 
-	--geo-c5: #00c717;
-	--geo-c6: #ff525a;
-	--geo-c7: #ff578c;
-	--geo-c8: #ff38a9;
+	// COLORS
+	@use "sass:list";
+	$geo-colors: #00c7b0, #ffce52, #ffa257, #ff6038, #00c717, #ff525a, #ff578c, #ff38a9;
+	$geo-light: #b9d5ee;
+	$geo-dark: #121212;
+	
+	:root {
+		@for $i from 1 through length($geo-colors){
+			--geo-c#{$i}: #{list.nth($geo-colors, $i)};
+		}
+		--geo-cd: #{$geo-dark};
+		--geo-cl: #{$geo-light};
 	}
-	:global .geo-cd {
-	stroke: var(--geo-cdark);
+
+	@for $i from 1 through length($geo-colors){
+		:global .geo-c#{$i} {
+			stroke: var(--geo-c#{$i});
+		}
 	}
-	:global .geo-cl {
-	stroke: var(--geo-clight);
-	}
-	:global .geo-c1 {
-	stroke: var(--geo-c1);
-	}
-	:global .geo-c2 {
-	stroke: var(--geo-c2);
-	}
-	:global .geo-c3 {
-	stroke: var(--geo-c3);
-	}
-	:global .geo-c4 {
-	stroke: var(--geo-c4);
-	}
-	:global .geo-c5 {
-	stroke: var(--geo-c5);
-	}
-	:global .geo-c6 {
-	stroke: var(--geo-c6);
-	}
-	:global .geo-c7 {
-	stroke: var(--geo-c7);
-	}
-	:global .geo-c8 {
-	stroke: var(--geo-c8);
-	}
+
+
+	// ELEMENTS
+
+	$shape-size: 50px;
 
 	:global svg.geo {
-	background-color: var(--geo-cdark);
+	background-color: var(--geo-cd);
 	position: absolute;
 	width: 100vw;
 	height: 100vh;
@@ -252,8 +218,8 @@
 	path {
 		fill: transparent;
 		stroke-width: var(--stroke-size);
-		height: 100px;
-		width: 100px;
+		height: $shape-size;
+		width: $shape-size;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transform-origin: 50% 50%;
@@ -262,14 +228,8 @@
 	}
 	@keyframes rotatetest {
 		to {
-		transform: rotate(14deg);
+			transform: rotate(14deg);
 		}
 	}
-	}
-
-	.grid.base {
-	width: inherit;
-	height: inherit;
-	transform: translate(-100%, -100%);
 	}
 </style>
