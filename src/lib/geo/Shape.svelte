@@ -2,11 +2,12 @@
     import Square from './Square.svelte';
     import { onMount, onDestroy } from 'svelte';
     import type { BgElement } from "src/types/bgelement.type";
+	import { getColorClass } from "./geos";
 
     export let element: BgElement;
+    let colorClass = getColorClass()
 
     onMount(()=>{
-
     })
 
     onDestroy(()=>{
@@ -25,7 +26,8 @@
     }
 </script>
 
-<svelte:component this={element.component} x={element.xPos} y={element.yPos} on:mouseenter={enter} on:mouseleave={leave} /> 
+<svelte:component this={element.component} x={element.xPos} y={element.yPos} {colorClass}
+    on:mouseenter={enter} on:mouseleave={leave}  /> 
 
 <style>
 </style>

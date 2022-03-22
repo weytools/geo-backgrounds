@@ -3,6 +3,7 @@
 
     export let x;
     export let y;
+    export let colorClass;
 
 
     let rotation = 0
@@ -17,8 +18,9 @@
     $: styles = `
     transform: rotate(${rotation}deg);   
     `
+    // on:click={rotate} 
 </script>
-<rect on:click={rotate} class="geo-c1" {x} {y} style={styles} />
+<rect class="{colorClass}" {x} {y} style={styles} />
 
 <style>
 </style>

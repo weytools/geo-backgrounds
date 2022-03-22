@@ -1,20 +1,24 @@
 <script lang="ts">
 	import { svg_element } from "svelte/internal";
-	import { geoHover } from "./geo/geos.js";
+	import { colorCount, shapeSize } from "./geo/geos";
 	import { onMount } from "svelte";
 	import type { BgElement } from "src/types/bgelement.type";
-	import Square from "./geo/Square.svelte";
 	import Shape from "./geo/Shape.svelte";
+	import Square from "./geo/Square.svelte";
+	import Circle from "./geo/Circle.svelte";
+	import Triangle from "./geo/Triangle.svelte";
+	import Squiggle from "./geo/Squiggle.svelte";
+
 
 	let strokeSize = 0.25;
+	
 
 	$: dynamicStyles = `--stroke-size: ${strokeSize}rem`
 	$: bgElements = []
 
 	// constructor
-
+	// shapeSize now defined in geos.ts
 	let blockSize = 200
-	let shapeSize = 50
 	let cols;
 	$: rows = 0;
 
@@ -38,9 +42,12 @@
 				let finalX = getAxisPoint(c)
 				let finalY = getAxisPoint(r)
 				
+
+				// get random shape
+				let shape = getRandomGeo();
 				// create shape
 				let newElement: BgElement = {
-					component: Square,
+					component: shape.component,
 					xPos: finalX,
 					yPos: finalY,
 					rotation: Math.floor(Math.random() * 360)				
@@ -68,72 +75,80 @@
 	}
 
 
-	// function getRandomGeo(){
-	// 	// set nums
-	// 	var sum = 0
-	// 	var seed = Math.floor((Math.random() * 100))/100
-	// 	var len = geos.length
+	function getRandomGeo(){
+		// set nums
+		var sum = 0
+		var seed = Math.floor((Math.random() * 100))/100
+		var len = geos.length
 
-	// 	// loop thru geos and choose one
-	// 	for (var i = 0; i < len; i++) {
-	// 		let geo = geos[i]
-	// 		// skip if it's in cooldown
-	// 		if (geo.cooldown > 0) {
-	// 			geos[i].cooldown--;
-	// 			continue;
-	// 		}
-	// 		// chance % to choose this geo
-	// 		let chance = geo.freq/len;
-	// 		sum += chance;
+		// loop thru geos and choose one
+		for (var i = 0; i < len; i++) {
+			let geo = geos[i]
+			// skip if it's in cooldown
+			if (geo.cooldown > 0) {
+				geos[i].cooldown--;
+				continue;
+			}
+			// chance % to choose this geo
+			let chance = geo.freq/len;
+			sum += chance;
 
-	// 		if (seed <= sum) {
-	// 			return geo
-	// 		}
-	// 	}
-	// }
-
-	let geos = {
-		"square":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"circle":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"triangle":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"sharp-squig":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"soft-squig":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"dot":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"plus":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
-		"spacer":{
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
-		},
+			if (seed <= sum) {
+				return geo
+			}
+		}
 	}
+
+	let geos = [
+		{
+			name: "square",
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		{
+			name: "circle",
+			freq: 1.0,
+			cooldown: 0,
+			component: Circle
+		},
+		{
+			name: "triangle",
+			freq: 1.0,
+			cooldown: 0,
+			component: Triangle
+		},
+		{
+			name: "sharp-squig",
+			freq: 1.0,
+			cooldown: 0,
+			component: Squiggle
+		},
+		{
+			name: "soft-squig",
+			freq: 1.0,
+			cooldown: 0,
+			component: Squiggle
+		},
+		{
+			name: "dot",
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		{
+			name: "plus",
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+		{
+			name: "spacer",
+			freq: 1.0,
+			cooldown: 0,
+			component: Square
+		},
+	]
 </script>
 
 <svg
@@ -153,9 +168,9 @@
 	<!--  square  -->
 	<!-- <Square on:mouseover={()=>console.log(this)} x="10" y="10" /> -->
 	<!--  circle  -->
-	<circle class="geo-c8" cx="5" cy="40" r="5" />
+	<!-- <circle class="geo-c8" cx="5" cy="40" r="5" /> -->
 	<!--  triangle  -->
-	<polygon class="geo-c4" points="0,50 5,40.86 10,50" />
+	<!-- <polygon class="geo-c4" points="0,50 5,40.86 10,50" /> -->
 	<!--  squig  -->
 	<polyline class="geo-c2" points="0,55 4,60 8,55 12,60 16,55 20,60 24,55" />
 	<!--  X  -->
@@ -163,16 +178,15 @@
 	<!--  dot  -->
 	<circle class="geo-c3" cx="5" cy="80" r=".5" />
 	<!--  round squig  -->
-	<path class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" />
+	<!-- <path class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" /> -->
 
 	<!-- grid  -->
-	{#each Array(rows) as _, i}
+	<!-- {#each Array(rows) as _, i}
 		<rect class="grid" width="100%" height="1" x="0" y="{i*blockSize}" fill="#cccccc80" />
 	{/each}
 	{#each Array(cols) as _, i}
 		<rect class="grid" width="1" height="100%" x="{i*blockSize}" y="0" fill="#cccccc80" />
-	{/each}
-	<rect class="grid" width="0.5" height="15" x="0" y="-7.5" fill="#ccc" />
+	{/each} -->
 </svg>
 
 <style lang="scss">
@@ -220,6 +234,7 @@
 		stroke-width: var(--stroke-size);
 		height: $shape-size;
 		width: $shape-size;
+		r: $shape-size/2;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transform-origin: 50% 50%;
