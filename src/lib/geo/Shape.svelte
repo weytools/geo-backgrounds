@@ -7,7 +7,9 @@
     export let element: BgElement;
     let colorClass = getColorClass()
 
+
     onMount(()=>{
+
     })
 
     onDestroy(()=>{
@@ -27,7 +29,7 @@
 </script>
 
 <svelte:component this={element.component} x={element.xPos} y={element.yPos} {colorClass}
-    on:mouseenter={enter} on:mouseleave={leave}  /> 
+    on:mouseenter={enter} on:mouseleave={leave} /> 
 
 <style>
 </style>

@@ -50,7 +50,7 @@
 					component: shape.component,
 					xPos: finalX,
 					yPos: finalY,
-					rotation: Math.floor(Math.random() * 360)				
+					bgPos: {col: c, row: r}	
 				}
 				// place element
 				bgElements = [...bgElements, newElement]
