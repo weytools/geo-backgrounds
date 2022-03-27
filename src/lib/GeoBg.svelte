@@ -10,6 +10,7 @@
 	import Squiggle from "./geo/Squiggle.svelte";
 	import Cross from "./geo/Cross.svelte";
 	import Spacer from "./geo/Spacer.svelte";
+	import anime from 'animejs/lib/anime.es.js';
 
 
 	let strokeSize = 0.25;
@@ -59,7 +60,11 @@
 
 			}
 		}
-
+		anime({
+		targets: document.querySelector('#svg-background').children,
+		opacity: [0,1],
+		duration: 3000
+	}).play()
 	})
 
 	function getAxisPoint(i:number){
@@ -159,6 +164,8 @@
 			component: Spacer
 		},
 	]
+
+
 </script>
 
 <svg
