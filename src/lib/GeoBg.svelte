@@ -8,6 +8,8 @@
 	import Circle from "./geo/Circle.svelte";
 	import Triangle from "./geo/Triangle.svelte";
 	import Squiggle from "./geo/Squiggle.svelte";
+	import Cross from "./geo/Cross.svelte";
+	import Spacer from "./geo/Spacer.svelte";
 
 
 	let strokeSize = 0.25;
@@ -79,21 +81,41 @@
 		// set nums
 		var sum = 0
 		var seed = Math.floor((Math.random() * 100))/100
-		var len = geos.length
+		var availGeos = geos.filter(g => g.cooldown < 1)
+		console.log('availGeos:', availGeos)
+		// get max chance
+		let weightedChance = 0
+		availGeos.forEach(c => {weightedChance += c.freq})
+
+		// lengths
+		var fullLen = geos.length
+		var availLen = availGeos.length
+
+		console.log(geos)
 
 		// loop thru geos and choose one
-		for (var i = 0; i < len; i++) {
+		for (var i = 0; i < fullLen; i++) {
 			let geo = geos[i]
+			console.log('geo:', geo)
 			// skip if it's in cooldown
 			if (geo.cooldown > 0) {
-				geos[i].cooldown--;
 				continue;
 			}
 			// chance % to choose this geo
-			let chance = geo.freq/len;
+			let chance = geo.freq/weightedChance;
+			
 			sum += chance;
 
+			// match
 			if (seed <= sum) {
+
+				geos.forEach(g => {
+					if (g.cooldown > 0){ 
+						g.cooldown = g.cooldown - 1
+					}
+				});
+
+				geos[i].cooldown = geos[i].cooldown + 1
 				return geo
 			}
 		}
@@ -102,57 +124,44 @@
 	let geos = [
 		{
 			name: "square",
-			freq: 1.0,
+			freq: 0.6,
 			cooldown: 0,
 			component: Square
 		},
 		{
 			name: "circle",
-			freq: 1.0,
+			freq: 0.6,
 			cooldown: 0,
 			component: Circle
 		},
 		{
 			name: "triangle",
-			freq: 1.0,
+			freq: 0.8,
 			cooldown: 0,
 			component: Triangle
 		},
 		{
-			name: "sharp-squig",
-			freq: 1.0,
-			cooldown: 0,
-			component: Squiggle
-		},
-		{
 			name: "soft-squig",
-			freq: 1.0,
+			freq: 0.3,
 			cooldown: 0,
 			component: Squiggle
 		},
 		{
-			name: "dot",
+			name: "cross",
 			freq: 1.0,
 			cooldown: 0,
-			component: Square
-		},
-		{
-			name: "plus",
-			freq: 1.0,
-			cooldown: 0,
-			component: Square
+			component: Cross
 		},
 		{
 			name: "spacer",
 			freq: 1.0,
-			cooldown: 0,
-			component: Square
+			cooldown: 3,
+			component: Spacer
 		},
 	]
 </script>
 
 <svg
-	on:click={()=>console.log('hi')}
 	id="svg-background"
 	class="geo"
 	viewBox="0 0 100% 100%"
@@ -171,12 +180,12 @@
 	<!-- <circle class="geo-c8" cx="5" cy="40" r="5" /> -->
 	<!--  triangle  -->
 	<!-- <polygon class="geo-c4" points="0,50 5,40.86 10,50" /> -->
-	<!--  squig  -->
-	<polyline class="geo-c2" points="0,55 4,60 8,55 12,60 16,55 20,60 24,55" />
+	<!--  squig not implemented -->
+	<!-- <polyline class="geo-c2" points="0,55 4,60 8,55 12,60 16,55 20,60 24,55" /> -->
 	<!--  X  -->
-	<polyline class="geo-c6" points="0,70 10,70 5,70 5,65 5,75" />
-	<!--  dot  -->
-	<circle class="geo-c3" cx="5" cy="80" r=".5" />
+	<!-- <polyline class="geo-c6" points="0,70 10,70 5,70 5,65 5,75" /> -->
+	<!--  dot not implemented -->
+	<!-- <circle class="geo-c3" cx="5" cy="80" r=".5" /> -->
 	<!--  round squig  -->
 	<!-- <path class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" /> -->
 
@@ -234,12 +243,21 @@
 		stroke-width: var(--stroke-size);
 		height: $shape-size;
 		width: $shape-size;
-		r: $shape-size/2;
+		r: calc($shape-size / 2);
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transform-origin: 50% 50%;
 		transform-box: fill-box;
 		// animation: rotatetest 1s ease-in-out infinite alternate;
+	}
+	rect.backer:not(.grid),
+	circle.backer,
+	polygon.backer {
+        fill: hsla(180, 100%, 50%, 0.3) !important;
+	}
+	polyline.backer,
+	path.backer {
+		stroke: hsla(180, 100%, 50%, 0.3) !important;
 	}
 	@keyframes rotatetest {
 		to {

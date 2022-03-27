@@ -1,7 +1,8 @@
 <script>
     import { onMount } from "svelte";
 	import { shapeSize } from "./geos";
-    import { tweened } from 'svelte/motion';
+    // import { tweened } from 'svelte/motion';
+    // import { cubicOut } from 'svelte/easing';
 
 
     export let x;
@@ -9,9 +10,11 @@
     export let colorClass;
 
     let styles;
-    let moveX = tweened(0,{		duration: 400,
-		easing: cubicOut})
-    let moveY = tweened(0)
+    // let moveX = tweened(0,{	
+    //     duration: 400,
+    //     easing: cubicOut
+    // })
+    // let moveY = tweened(0)
     let rotation = 0
     let maxRotation = 180
     let points = ''
@@ -41,24 +44,25 @@
     function rotate(){
         rotation = Math.floor(Math.random() * maxRotation)
     } 
-    function movement(){
-        moveX.set(Math.floor(Math.random() * 100))
-        moveY.set(Math.floor(Math.random() * 100))
-    }
+    // function movement(){
+    //     moveX.set(Math.floor(Math.random() * 100))
+    //     moveY.set(Math.floor(Math.random() * 100))
+    // }
 
     onMount(()=>{
         buildPointsList();
         rotate();
         
         
-        movement();
+        // movement();
     });
-$: styles = `transform: rotate(${rotation}deg) translate(${$moveX}px, ${$moveY}px);`
-
-    // on:click={rotate} 
+$: styles = `transform: rotate(${rotation}deg) `
+let backer = 'translate(4%, 25%)'
 </script>
 
-<path class="{colorClass}" style={styles}   d="{points}" on:click={movement} />
+<path class="backer" style={styles+backer}   d="{points}" />
+<path class="{colorClass}" style={styles}   d="{points}" />
+<!-- <path class="{colorClass}" style={styles}   d="{points}" on:click={movement} /> -->
 
 <style>
 </style>

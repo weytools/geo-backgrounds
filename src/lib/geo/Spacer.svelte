@@ -16,13 +16,11 @@
     }
 
     $: styles = `
-    transform: rotate(${rotation}deg)   
+    transform: rotate(${rotation}deg);   
     `
-    let backer = 'translate(15%, 15%)'
     // on:click={rotate} 
 </script>
-<rect class="backer" {x} {y} style={styles+backer}/>
-<rect class="{colorClass}" {x} {y} style={styles} />
+<line class={colorClass} x1="{x}" y1="{y}" x2="{x}" y2="{y}" />
 
 <style>
 </style>

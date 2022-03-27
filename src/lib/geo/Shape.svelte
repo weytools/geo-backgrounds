@@ -27,9 +27,9 @@
         hovering = false;
     }
 </script>
-
 <svelte:component this={element.component} x={element.xPos} y={element.yPos} {colorClass}
     on:mouseenter={enter} on:mouseleave={leave} /> 
 
 <style>
+
 </style>

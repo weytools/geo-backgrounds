@@ -30,11 +30,12 @@
     }
 
     $: styles = `
-    transform: rotate(${rotation}deg);   
+    transform: rotate(${rotation}deg)   
     `
-    // on:click={rotate} 
+    let backer = 'translate(15%, 15%)'
 </script>
 
+<polygon class="backer" style={styles+backer} points="{points}" />
 <polygon class="{colorClass}" style={styles} points="{points}" />
 
 <style>
