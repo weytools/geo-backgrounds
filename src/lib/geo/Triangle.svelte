@@ -1,11 +1,13 @@
 <script>
     import { onMount } from "svelte";
 	import { shapeSize } from "./geos";
+    import { fade } from "svelte/transition";
 
 
     export let x;
     export let y;
     export let colorClass;
+    export let visible;
 
 
     let rotation = 0
@@ -35,8 +37,14 @@
     let backer = 'translate(15%, 15%)'
 </script>
 
-<polygon class="backer" style={styles+backer} points="{points}" />
-<polygon class="{colorClass}" style={styles} points="{points}" />
+
+
+{#if visible}
+    <polygon transition:fade class="backer" style={styles+backer} points="{points}" />
+    <polygon transition:fade class="{colorClass}" style={styles} points="{points}" />
+{/if}
+
+
 
 <style>
 </style>

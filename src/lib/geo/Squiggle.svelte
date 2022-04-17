@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
 	import { shapeSize, animTime } from "./geos";
+    import { fade } from "svelte/transition";
     // import { tweened } from 'svelte/motion';
     // import { cubicOut } from 'svelte/easing';
 
@@ -8,6 +9,7 @@
     export let x;
     export let y;
     export let colorClass;
+    export let visible;
 
     let styles;
     // let moveX = tweened(0,{	
@@ -60,9 +62,11 @@ $: styles = `transform: rotate(${rotation}deg) `
 let backer = 'translate(4%, 25%)'
 </script>
 
-<path class="backer" style={styles+backer}   d="{points}" />
-<path class="{colorClass}" style={styles}   d="{points}" />
-<!-- <path class="{colorClass}" style={styles}   d="{points}" on:click={movement} /> -->
+
+{#if visible}
+    <path transition:fade class="backer" style={styles+backer}   d="{points}" />
+    <path transition:fade class="{colorClass}" style={styles}   d="{points}" />
+{/if}
 
 <style>
 </style>
