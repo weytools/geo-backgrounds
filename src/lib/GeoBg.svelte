@@ -10,10 +10,16 @@
 	import Squiggle from "./geo/Squiggle.svelte";
 	import Cross from "./geo/Cross.svelte";
 	import Spacer from "./geo/Spacer.svelte";
-	import anime from 'animejs/lib/anime.es.js';
 
 
 	let strokeSize = 0.25;
+
+	let test: BgElement = {
+		component: Spacer,
+		xPos: 1,
+		yPos: 1,
+		bgPos: {col: 1, row: 1}
+	}
 	
 
 	$: dynamicStyles = `--stroke-size: ${strokeSize}rem`
@@ -24,6 +30,7 @@
 	let blockSize = 200
 	let cols;
 	$: rows = 0;
+	let elCount:number = 0;
 
 	onMount(()=>{
 		// build background grid
@@ -53,18 +60,14 @@
 					component: shape.component,
 					xPos: finalX,
 					yPos: finalY,
-					bgPos: {col: c, row: r}	
+					bgPos: {col: c, row: r}
 				}
 				// place element
 				bgElements = [...bgElements, newElement]
-
 			}
 		}
-		anime({
-		targets: document.querySelector('#svg-background').children,
-		opacity: [0,1],
-		duration: 3000
-	}).play()
+		shuffleGeos(bgElements)
+
 	})
 
 	function getAxisPoint(i:number){
@@ -87,7 +90,6 @@
 		var sum = 0
 		var seed = Math.floor((Math.random() * 100))/100
 		var availGeos = geos.filter(g => g.cooldown < 1)
-		console.log('availGeos:', availGeos)
 		// get max chance
 		let weightedChance = 0
 		availGeos.forEach(c => {weightedChance += c.freq})
@@ -96,12 +98,9 @@
 		var fullLen = geos.length
 		var availLen = availGeos.length
 
-		console.log(geos)
-
 		// loop thru geos and choose one
 		for (var i = 0; i < fullLen; i++) {
 			let geo = geos[i]
-			console.log('geo:', geo)
 			// skip if it's in cooldown
 			if (geo.cooldown > 0) {
 				continue;
@@ -124,6 +123,31 @@
 				return geo
 			}
 		}
+	}
+
+	function shuffleGeos(geoArray:BgElement[]){
+		geoArray.sort(function(a,b){
+			let aType = a.component.name
+			let bType = b.component.name
+
+			// sort spacers at the end
+			if (aType.includes('Spacer') && bType.includes('Spacer'))
+			{
+				return 0;
+			}
+			if (aType.includes('Spacer'))
+			{
+				return 1;
+			}
+			if (bType.includes('Spacer'))
+			{
+				return -1;
+			}
+			
+			// randomize the rest
+			return 0.5 - Math.random();
+		});
+		console.log(geoArray)
 	}
 
 	let geos = [
@@ -167,6 +191,12 @@
 
 
 </script>
+
+
+
+
+
+
 <svg
 	id="svg-frame"
 	viewBox="0 0 100% 100%"
@@ -186,34 +216,19 @@
 	preserveAspectRatio="xMinYMin"
 
 >
-	{#each bgElements as bgElement}
-		<svelte:component this={Shape} element={bgElement}/>
+	{#each bgElements as bgElement, i}
+		<svelte:component this={Shape} element={bgElement} delay={i}/>
 	{/each}
 
-	
-	<!--  square  -->
-	<!-- <Square on:mouseover={()=>console.log(this)} x="10" y="10" /> -->
-	<!--  circle  -->
-	<!-- <circle class="geo-c8" cx="5" cy="40" r="5" /> -->
-	<!--  triangle  -->
-	<!-- <polygon class="geo-c4" points="0,50 5,40.86 10,50" /> -->
-	<!--  squig not implemented -->
-	<!-- <polyline class="geo-c2" points="0,55 4,60 8,55 12,60 16,55 20,60 24,55" /> -->
-	<!--  X  -->
-	<!-- <polyline class="geo-c6" points="0,70 10,70 5,70 5,65 5,75" /> -->
-	<!--  dot not implemented -->
-	<!-- <circle class="geo-c3" cx="5" cy="80" r=".5" /> -->
-	<!--  round squig  -->
-	<!-- <path class="geo-c7" d="M0,90  Q2.5 94, 5 90 T10 90 T15 90 T20 90 T25 90" /> -->
-
-	<!-- grid  -->
-	<!-- {#each Array(rows) as _, i}
-		<rect class="grid" width="100%" height="1" x="0" y="{i*blockSize}" fill="#cccccc80" />
-	{/each}
-	{#each Array(cols) as _, i}
-		<rect class="grid" width="1" height="100%" x="{i*blockSize}" y="0" fill="#cccccc80" />
-	{/each} -->
 </svg>
+
+
+
+
+
+
+
+
 
 <style lang="scss">
 
@@ -289,6 +304,7 @@
 	top: 0;
 	left: 0;
 	z-index: 2;
+	pointer-events: none;
 }
 rect.frame {
 	stroke: #ACF;		

@@ -1,9 +1,11 @@
 <script>
     import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
 
     export let x;
     export let y;
     export let colorClass;
+    export let visible;
 
 
     let rotation = 0
@@ -21,8 +23,11 @@
     let backer = 'translate(15%, 15%)'
     // on:click={rotate} 
 </script>
-<rect class="backer" x={x+10} y={y+10} style={styles+backer}/>
-<rect class="main {colorClass}" {x} {y} style={styles} />
+
+{#if visible}
+<rect transition:fade class="backer" x={x+10} y={y+10} style={styles+backer}/>
+<rect transition:fade class="main {colorClass}" {x} {y} style={styles} />
+{/if}
 
 <style lang="scss">
     $rotate: floor(random(90));

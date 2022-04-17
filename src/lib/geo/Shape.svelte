@@ -5,11 +5,13 @@
 	import { getColorClass } from "./geos";
 
     export let element: BgElement;
+    export let delay: number;
     let colorClass = getColorClass()
 
+    $: visible = false;
 
     onMount(()=>{
-
+        setInterval( () => {visible=true}, delay*100)
     })
 
     onDestroy(()=>{
@@ -27,9 +29,20 @@
         hovering = false;
     }
 </script>
-<svelte:component this={element.component} x={element.xPos} y={element.yPos} {colorClass}
-    on:mouseenter={enter} on:mouseleave={leave} /> 
+
+
+
+<!-- <rect class="btn" x={element.xPos} y={element.yPos} on:click={invertVis} /> -->
+<!-- {#if visible} -->
+    <svelte:component this={element.component} x={element.xPos} y={element.yPos} {colorClass}
+    on:mouseenter={enter} on:mouseleave={leave} {visible} /> 
+<!-- {/if} -->
+
+
 
 <style>
-
+rect.btn{
+    fill: blanchedalmond !important;
+    border: 3px solid darkkhaki;
+}
 </style>

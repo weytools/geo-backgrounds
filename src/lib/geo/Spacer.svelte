@@ -4,6 +4,7 @@
     export let x;
     export let y;
     export let colorClass;
+    export let visible;
 
 
     let rotation = 0

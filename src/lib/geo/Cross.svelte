@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
 	import { shapeSize } from "./geos";
+    import { fade } from "svelte/transition";
     // import { tweened } from 'svelte/motion';
     // import { cubicOut } from 'svelte/easing';
 
@@ -8,6 +9,7 @@
     export let x;
     export let y;
     export let colorClass;
+    export let visible;
 
     let styles;
     // let moveX = tweened(0,{	
@@ -49,7 +51,12 @@ $: styles = `transform: rotate(${rotation}deg);`
 
 </script>
 
-<polyline class="{colorClass}" style={styles}   points="{points}" />
+
+{#if visible}
+<polyline transition:fade class="{colorClass}" style={styles}   points="{points}" />
+{/if}
+
+
 
 <style lang="scss">
     $rotate: floor(random(90));
