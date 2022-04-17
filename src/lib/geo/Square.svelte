@@ -21,8 +21,29 @@
     let backer = 'translate(15%, 15%)'
     // on:click={rotate} 
 </script>
-<rect class="backer" {x} {y} style={styles+backer}/>
-<rect class="{colorClass}" {x} {y} style={styles} />
+<rect class="backer" x={x+10} y={y+10} style={styles+backer}/>
+<rect class="main {colorClass}" {x} {y} style={styles} />
 
-<style>
+<style lang="scss">
+    $rotate: floor(random(90));
+
+    rect {
+        animation: life 5s infinite ease-in-out;
+    }
+    @keyframes  life {
+        0%{
+            transform: rotate(#{$rotate}deg); 
+            opacity: 0;
+        }
+        20% {
+            opacity: 1;
+        }
+        80% {
+            opacity: 1;
+        }
+       100% {
+            transform: rotate(#{$rotate+360}deg); 
+            opacity: 0;
+        }
+    }
 </style>

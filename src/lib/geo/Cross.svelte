@@ -51,5 +51,26 @@ $: styles = `transform: rotate(${rotation}deg);`
 
 <polyline class="{colorClass}" style={styles}   points="{points}" />
 
-<style>
+<style lang="scss">
+    $rotate: floor(random(90));
+
+    polyline {
+        animation: life 5s infinite ease-in-out;
+    }
+    @keyframes  life {
+        0%{
+            transform: rotate(#{$rotate}deg); 
+            opacity: 0;
+        }
+        20% {
+            opacity: 1;
+        }
+        80% {
+            opacity: 1;
+        }
+       100% {
+            transform: rotate(#{$rotate+360}deg); 
+            opacity: 0;
+        }
+    }
 </style>

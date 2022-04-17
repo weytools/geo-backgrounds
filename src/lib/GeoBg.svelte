@@ -159,7 +159,7 @@
 		},
 		{
 			name: "spacer",
-			freq: 1.0,
+			freq: 0.8,
 			cooldown: 3,
 			component: Spacer
 		},
@@ -167,7 +167,15 @@
 
 
 </script>
+<svg
+	id="svg-frame"
+	viewBox="0 0 100% 100%"
+	version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	preserveAspectRatio="xMinYMin">
 
+	<rect class="frame geo-c1" width="100%" height="100%" />
+</svg>
 <svg
 	id="svg-background"
 	class="geo"
@@ -176,11 +184,13 @@
 	xmlns="http://www.w3.org/2000/svg"
 	style={dynamicStyles}
 	preserveAspectRatio="xMinYMin"
+
 >
 	{#each bgElements as bgElement}
 		<svelte:component this={Shape} element={bgElement}/>
 	{/each}
 
+	
 	<!--  square  -->
 	<!-- <Square on:mouseover={()=>console.log(this)} x="10" y="10" /> -->
 	<!--  circle  -->
@@ -209,8 +219,11 @@
 
 	// COLORS
 	@use "sass:list";
-	$geo-colors: #00c7b0, #ffce52, #ffa257, #ff6038, #00c717, #ff525a, #ff578c, #ff38a9;
-	$geo-light: #b9d5ee;
+	//$geo-colors: #00c7b0, #ffce52, #ffa257, #ff6038, #00c717, #ff525a, #ff578c, #ff38a9;
+	//$cool: #FF6AD5, #C774E8, #AD8CFF, #8795E8, #94D0FF;
+	//$crystal-pepsi: #FFCCFF, #F1DAFF, #E3E8FF, #CCFFFF;
+	$geo-colors: #FFCCFF, #F1DAFF, #E3E8FF, #CCFFFF;
+	$geo-light: #FFF;
 	$geo-dark: #121212;
 	
 	:root {
@@ -219,6 +232,7 @@
 		}
 		--geo-cd: #{$geo-dark};
 		--geo-cl: #{$geo-light};
+		--backer-c: #FFFFCC;
 	}
 
 	@for $i from 1 through length($geo-colors){
@@ -233,7 +247,7 @@
 	$shape-size: 50px;
 
 	:global svg.geo {
-	background-color: var(--geo-cd);
+	background-color: var(--geo-cl);
 	position: absolute;
 	width: 100vw;
 	height: 100vh;
@@ -241,7 +255,7 @@
 	left: 0;
 	z-index: -1;
 
-	rect:not(.grid),
+	rect:not(.grid):not(.geo-border),
 	circle,
 	polygon,
 	polyline,
@@ -260,16 +274,25 @@
 	rect.backer:not(.grid),
 	circle.backer,
 	polygon.backer {
-        fill: hsla(180, 100%, 50%, 0.3) !important;
+        fill: var(--backer-c) !important;
 	}
 	polyline.backer,
 	path.backer {
-		stroke: hsla(180, 100%, 50%, 0.3) !important;
+		stroke: var(--backer-c) !important;
 	}
-	@keyframes rotatetest {
-		to {
-			transform: rotate(14deg);
-		}
-	}
-	}
+}
+
+#svg-frame {
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	z-index: 2;
+}
+rect.frame {
+	stroke: #ACF;		
+	stroke-width: 4rem;
+	fill: transparent;
+}
 </style>
