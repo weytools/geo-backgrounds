@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-	import { shapeSize } from "./geos";
+	import { shapeSize, animTime } from "./geos";
     // import { tweened } from 'svelte/motion';
     // import { cubicOut } from 'svelte/easing';
 
